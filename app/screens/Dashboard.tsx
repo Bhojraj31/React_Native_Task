@@ -50,13 +50,13 @@ const Dashboard = () => {
         );
     }
 
-    // if (error) {
-    //     return (
-    //         <View style={styles.errorContainer}>
-    //             <Text style={styles.errorText}>{error}</Text>
-    //         </View>
-    //     );
-    // }
+    if (error) {
+        return (
+            <View style={styles.errorContainer}>
+                <Text style={styles.errorText}>{error}</Text>
+            </View>
+        );
+    }
 
     //! PIE Charts for AGE
     const getColorForRange = (range: string) => {

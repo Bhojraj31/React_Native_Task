@@ -1,11 +1,12 @@
-import { ActivityIndicator, Dimensions, FlatList, ScrollView, StyleSheet, Text, TextInput, View, TouchableOpacity } from 'react-native';
+import { ActivityIndicator, Dimensions, FlatList, ScrollView, StyleSheet, Text, TextInput, View, TouchableOpacity, PixelRatio } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { IconButton } from 'react-native-paper';
 import axios from 'axios';
 import { BarChart, PieChart } from 'react-native-gifted-charts';
 
-const { height, width } = Dimensions.get('window');
-
+// const { height, width } = Dimensions.get('window');
+const height = PixelRatio.get()
+const width = PixelRatio.get()
 interface Employee {
     id: number;
     employee_name: string;
@@ -50,13 +51,13 @@ const Dashboard = () => {
         );
     }
 
-    if (error) {
-        return (
-            <View style={styles.errorContainer}>
-                <Text style={styles.errorText}>{error}</Text>
-            </View>
-        );
-    }
+    // if (error) {
+    //     return (
+    //         <View style={styles.errorContainer}>
+    //             <Text style={styles.errorText}>{error}</Text>
+    //         </View>
+    //     );
+    // }
 
     //! PIE Charts for AGE
     const getColorForRange = (range: string) => {
@@ -188,7 +189,7 @@ const Dashboard = () => {
                             frontColor={'#123c6e'}
                             barWidth={22}
                             data={barChartData.result}
-                            yAxisLabelWidth={50}
+                            yAxisLabelWidth={20}
                             height={250}
                             width={300}
                             spacing={50}
@@ -270,7 +271,7 @@ const styles = StyleSheet.create({
     },
     header: {
         backgroundColor: '#123c6e',
-        height: height - 630,
+        height: height+185,
         borderBottomLeftRadius: 50,
         paddingHorizontal: 15,
         paddingVertical: 20,
@@ -324,7 +325,7 @@ const styles = StyleSheet.create({
     },
     chartContainer: {
         width: '96%',
-        height: width - 100,
+        height: width+300,
         backgroundColor: '#ffffff',
         margin: 8,
         marginVertical: 15,

@@ -1,12 +1,12 @@
-import { ActivityIndicator, Dimensions, FlatList, ScrollView, StyleSheet, Text, TextInput, View, TouchableOpacity, PixelRatio } from 'react-native';
+import { ActivityIndicator, Dimensions, FlatList, ScrollView, StyleSheet, Text, TextInput, View, TouchableOpacity } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { IconButton } from 'react-native-paper';
 import axios from 'axios';
 import { BarChart, PieChart } from 'react-native-gifted-charts';
 
-// const { height, width } = Dimensions.get('window');
-const height = PixelRatio.get()
-const width = PixelRatio.get()
+const height = Dimensions.get('screen').height;
+const width = Dimensions.get('screen').width;
+
 interface Employee {
     id: number;
     employee_name: string;
@@ -42,6 +42,10 @@ const Dashboard = () => {
         };
         fetchData();
     }, []);
+
+    const deleteEmployee = (id: number) => {
+        setEmployeeData(prevData => prevData.filter(employee => employee.id !== id));
+    };
 
     if (loading) {
         return (
@@ -139,7 +143,7 @@ const Dashboard = () => {
         <View style={styles.itemContainer}>
             <View style={styles.itemHeader}>
                 <Text style={styles.itemHeaderText}>Employee ID: <Text style={styles.itemIdText}>{item.id}</Text></Text>
-                <TouchableOpacity style={styles.trashButton}>
+                <TouchableOpacity style={styles.trashButton} onPress={() => deleteEmployee(item.id)}>
                     <IconButton icon='trash-can-outline' size={20} iconColor='#123c6e' />
                 </TouchableOpacity>
             </View>
@@ -159,7 +163,6 @@ const Dashboard = () => {
             </View>
         </View>
     );
-
     return (
         <View style={styles.container}>
             <View style={styles.header}>
@@ -184,13 +187,21 @@ const Dashboard = () => {
             </View>
             <ScrollView>
                 <View style={styles.chartContainer}>
+                    <View style={{ flexDirection: 'row', marginVertical: 20, paddingHorizontal: 15 }}>
+                        <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#123c6e' }}>
+                            AGE VS SALARY
+                        </Text>
+                    </View>
                     {barChartData ? (
                         <BarChart
                             frontColor={'#123c6e'}
                             barWidth={22}
                             data={barChartData.result}
-                            yAxisLabelWidth={20}
-                            height={250}
+                            yAxisLabelWidth={25}
+                            animationDuration={5}
+                            xAxisLabelTextStyle={{}}
+                            xAxisLabelTexts={['20-30', '30-40', '40-50', '50-60']}
+                            height={200}
                             width={300}
                             spacing={50}
                             yAxisLabelTexts={categorizeSalaries(barChartData.ranges)}
@@ -198,9 +209,28 @@ const Dashboard = () => {
                     ) : (
                         <Text>No data available for chart</Text>
                     )}
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', paddingVertical: 10 }}>
+                        <Text style={{ fontSize: 15, color: '#818181' }}>
+                            x-axis: <Text style={{ fontSize: 16, color: '#000', fontWeight: 'bold' }}>Age</Text>(years)
+                        </Text>
+                        <Text style={{ fontSize: 15, color: '#818181' }}>
+                            x-axis: <Text style={{ fontSize: 16, color: '#000', fontWeight: 'bold' }}>Salary</Text>(LPA)
+                        </Text>
+                    </View>
                 </View>
                 <View style={styles.chartContainer}>
                     <Text style={styles.employeeDetailsTitle}>EMPLOYEE AGE</Text>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', paddingVertical: 10 }}>
+                        <View style={{ backgroundColor: '#661df0', padding: 10, borderRadius: 10, paddingHorizontal: 15 }}>
+                            <Text style={{ fontSize: 14, color: '#fff', fontWeight: 'bold' }}>20-30 YEARS</Text>
+                        </View>
+                        <View style={{ backgroundColor: '#35d0a4', padding: 10, borderRadius: 10, paddingHorizontal: 15 }}>
+                            <Text style={{ fontSize: 14, color: '#fff', fontWeight: 'bold' }}>30-40 YEARS</Text>
+                        </View>
+                        <View style={{ backgroundColor: '#fe935e', padding: 10, borderRadius: 10, paddingHorizontal: 15 }}>
+                            <Text style={{ fontSize: 14, color: '#fff', fontWeight: 'bold' }}>40-50 YEARS</Text>
+                        </View>
+                    </View>
                     <View style={styles.pieChartContainer}>
                         <PieChart
                             data={pieDataAge}
@@ -216,9 +246,6 @@ const Dashboard = () => {
                                     </View>
                                 </View>
                             )}
-                            labelsPosition='inward'
-                            textColor="black"
-                            textSize={12}
                         />
                     </View>
                 </View>
@@ -228,6 +255,17 @@ const Dashboard = () => {
                         <PieChart
                             data={pieDataSalary}
                         />
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', paddingVertical: 10 }}>
+                            <View style={{ backgroundColor: '#661df0', padding: 10, borderRadius: 10, paddingHorizontal: 15 }}>
+                                <Text style={{ fontSize: 14, color: '#fff', fontWeight: 'bold' }}>20-30 YEARS</Text>
+                            </View>
+                            <View style={{ backgroundColor: '#35d0a4', padding: 10, borderRadius: 10, paddingHorizontal: 15 }}>
+                                <Text style={{ fontSize: 14, color: '#fff', fontWeight: 'bold' }}>30-40 YEARS</Text>
+                            </View>
+                            <View style={{ backgroundColor: '#fe935e', padding: 10, borderRadius: 10, paddingHorizontal: 15 }}>
+                                <Text style={{ fontSize: 14, color: '#fff', fontWeight: 'bold' }}>40-50 YEARS</Text>
+                            </View>
+                        </View>
                     </View>
                 </View>
                 <View>
@@ -271,7 +309,7 @@ const styles = StyleSheet.create({
     },
     header: {
         backgroundColor: '#123c6e',
-        height: height+185,
+        height: height / 4.6,
         borderBottomLeftRadius: 50,
         paddingHorizontal: 15,
         paddingVertical: 20,
@@ -325,7 +363,7 @@ const styles = StyleSheet.create({
     },
     chartContainer: {
         width: '96%',
-        height: width+300,
+        height: height / 2.5,
         backgroundColor: '#ffffff',
         margin: 8,
         marginVertical: 15,
@@ -381,8 +419,8 @@ const styles = StyleSheet.create({
     employeeDetailsTitle: {
         fontSize: 18,
         color: '#123c6e',
-        paddingHorizontal:10,
-        paddingVertical:10,
+        paddingHorizontal: 10,
+        paddingTop: 10,
         fontWeight: '600',
     },
     viewAllButton: {

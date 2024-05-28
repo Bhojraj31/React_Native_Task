@@ -1,4 +1,4 @@
-import { ActivityIndicator, Dimensions, FlatList, ScrollView, StyleSheet, Text, TextInput, View, TouchableOpacity } from 'react-native';
+import { ActivityIndicator, Dimensions, FlatList, ScrollView, StyleSheet, Text, TextInput, View, TouchableOpacity, Image } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { IconButton } from 'react-native-paper';
 import axios from 'axios';
@@ -26,6 +26,9 @@ const Dashboard = () => {
     const [employeeData, setEmployeeData] = useState<Employee[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+    const [selectedValue, setSelectedValue] = useState<string>('');
+    // ------ State for isOpen ------
+    const [isOpen, setIsOpen] = useState(false);
     const [barChartData, setBarChartData] = useState<{ result: { value: number }[]; ranges: number[][] } | null>(null);
 
     useEffect(() => {
@@ -34,6 +37,7 @@ const Dashboard = () => {
                 const response = await axios.get('https://dummy.restapiexample.com/api/v1/employees');
                 setEmployeeData(response.data.data);
                 setBarChartData(getRangeSalary(response.data.data));
+                setSelectedValue('Monthly')
             } catch (err: any) {
                 setError(err.message);
             } finally {
@@ -163,6 +167,21 @@ const Dashboard = () => {
             </View>
         </View>
     );
+
+    // ! DropDown 
+    // ------ Options data for dropdown ------
+    const options = ['Monthly', 'Weekly', 'Yearly'];
+
+    const toggleDropdown = () => {
+        setIsOpen(!isOpen);
+    };
+
+    const handleSelect = (value: string) => {
+        setSelectedValue(value);
+        // setOnSelect(value);
+        toggleDropdown();
+    };
+
     return (
         <View style={styles.container}>
             <View style={styles.header}>
@@ -187,10 +206,31 @@ const Dashboard = () => {
             </View>
             <ScrollView>
                 <View style={styles.chartContainer}>
-                    <View style={{ flexDirection: 'row', marginVertical: 20, paddingHorizontal: 15 }}>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginVertical: 20, paddingHorizontal: 15 }}>
                         <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#123c6e' }}>
                             AGE VS SALARY
                         </Text>
+                        {/* Dropdown */}
+                        <TouchableOpacity onPress={toggleDropdown} style={styles.headerDropDown}>
+                            <Text style={{ color: '#000', fontSize: 14, }}>{selectedValue}</Text>
+                            <Image
+                                source={require('../images/Arrow.png')}
+                                style={[styles.arrowIcon, { tintColor: '#000' }, isOpen && styles.rotateArrow]}
+                            />
+                        </TouchableOpacity>
+                        {isOpen && (
+                            <View style={styles.dropdown}>
+                                <FlatList
+                                    data={options}
+                                    renderItem={({ item }) => (
+                                        <TouchableOpacity onPress={() => handleSelect(item)}>
+                                            <Text style={{ color: '#000', fontSize: 14, }}>{item}</Text>
+                                        </TouchableOpacity>
+                                    )}
+                                    keyExtractor={(item) => item}
+                                />
+                            </View>
+                        )}
                     </View>
                     {barChartData ? (
                         <BarChart
@@ -199,10 +239,11 @@ const Dashboard = () => {
                             data={barChartData.result}
                             yAxisLabelWidth={25}
                             animationDuration={5}
-                            xAxisLabelTextStyle={{}}
                             xAxisLabelTexts={['20-30', '30-40', '40-50', '50-60']}
                             height={200}
                             width={300}
+                            xAxisLength={300}
+                            disableScroll
                             spacing={50}
                             yAxisLabelTexts={categorizeSalaries(barChartData.ranges)}
                         />
@@ -220,7 +261,7 @@ const Dashboard = () => {
                 </View>
                 <View style={styles.chartContainer}>
                     <Text style={styles.employeeDetailsTitle}>EMPLOYEE AGE</Text>
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', paddingVertical: 10 }}>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', paddingTop: 10 }}>
                         <View style={{ backgroundColor: '#661df0', padding: 10, borderRadius: 10, paddingHorizontal: 15 }}>
                             <Text style={{ fontSize: 14, color: '#fff', fontWeight: 'bold' }}>20-30 YEARS</Text>
                         </View>
@@ -255,16 +296,19 @@ const Dashboard = () => {
                         <PieChart
                             data={pieDataSalary}
                         />
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', paddingVertical: 10 }}>
-                            <View style={{ backgroundColor: '#661df0', padding: 10, borderRadius: 10, paddingHorizontal: 15 }}>
-                                <Text style={{ fontSize: 14, color: '#fff', fontWeight: 'bold' }}>20-30 YEARS</Text>
-                            </View>
-                            <View style={{ backgroundColor: '#35d0a4', padding: 10, borderRadius: 10, paddingHorizontal: 15 }}>
-                                <Text style={{ fontSize: 14, color: '#fff', fontWeight: 'bold' }}>30-40 YEARS</Text>
-                            </View>
-                            <View style={{ backgroundColor: '#fe935e', padding: 10, borderRadius: 10, paddingHorizontal: 15 }}>
-                                <Text style={{ fontSize: 14, color: '#fff', fontWeight: 'bold' }}>40-50 YEARS</Text>
-                            </View>
+                    </View>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-around', paddingTop: 10 }}>
+                        <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                            <View style={{ width: 10, height: 10, borderWidth: 1, borderColor: '#661df0', backgroundColor: '#661df0', borderRadius: 50 }}></View>
+                            <Text style={{ fontSize: 14, color: '#000', fontWeight: 'bold' }}>3-4LPA</Text>
+                        </View>
+                        <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                            <View style={{ width: 10, height: 10, borderWidth: 1, borderColor: '#35d0a4', backgroundColor: '#35d0a4', borderRadius: 50 }}></View>
+                            <Text style={{ fontSize: 14, color: '#000', fontWeight: 'bold' }}>4-5LPALPA</Text>
+                        </View>
+                        <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                            <View style={{ width: 10, height: 10, borderWidth: 1, borderColor: '#fe935e', backgroundColor: '#fe935e', borderRadius: 50 }}></View>
+                            <Text style={{ fontSize: 14, color: '#000', fontWeight: 'bold' }}>5-6LPA</Text>
                         </View>
                     </View>
                 </View>
@@ -309,7 +353,7 @@ const styles = StyleSheet.create({
     },
     header: {
         backgroundColor: '#123c6e',
-        height: height / 4.6,
+        height: height / 4.2,
         borderBottomLeftRadius: 50,
         paddingHorizontal: 15,
         paddingVertical: 20,
@@ -363,7 +407,7 @@ const styles = StyleSheet.create({
     },
     chartContainer: {
         width: '96%',
-        height: height / 2.5,
+        height: height / 2.3,
         backgroundColor: '#ffffff',
         margin: 8,
         marginVertical: 15,
@@ -464,6 +508,29 @@ const styles = StyleSheet.create({
         fontSize: 12,
         color: '#123c6e',
         fontWeight: 'bold',
+    },
+    headerDropDown: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'lightgray',
+        borderRadius: 10,
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+    },
+    arrowIcon: {
+        marginLeft: 'auto',
+        width: 18,
+        height: 18,
+        transform: [{ rotate: '270deg' }],
+    },
+    rotateArrow: {
+        transform: [{ rotate: '90deg' }],
+    },
+    dropdown: {
+        position: 'absolute',
+        top: 30,
+        right: 35,
     },
 });
 

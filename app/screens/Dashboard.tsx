@@ -262,13 +262,13 @@ const Dashboard = () => {
                 <View style={styles.chartContainer}>
                     <Text style={styles.employeeDetailsTitle}>EMPLOYEE AGE</Text>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', paddingTop: 10 }}>
-                        <View style={{ backgroundColor: '#661df0', padding: 10, borderRadius: 10, paddingHorizontal: 15 }}>
+                        <View style={{ backgroundColor: '#661df0', padding: 10, borderRadius: 10,}}>
                             <Text style={{ fontSize: 14, color: '#fff', fontWeight: 'bold' }}>20-30 YEARS</Text>
                         </View>
-                        <View style={{ backgroundColor: '#35d0a4', padding: 10, borderRadius: 10, paddingHorizontal: 15 }}>
+                        <View style={{ backgroundColor: '#35d0a4', padding: 10, borderRadius: 10,}}>
                             <Text style={{ fontSize: 14, color: '#fff', fontWeight: 'bold' }}>30-40 YEARS</Text>
                         </View>
-                        <View style={{ backgroundColor: '#fe935e', padding: 10, borderRadius: 10, paddingHorizontal: 15 }}>
+                        <View style={{ backgroundColor: '#fe935e', padding: 10, borderRadius: 10,}}>
                             <Text style={{ fontSize: 14, color: '#fff', fontWeight: 'bold' }}>40-50 YEARS</Text>
                         </View>
                     </View>
